@@ -56,7 +56,9 @@ class Crawler:
         page = context.new_page()
         page.goto("https://codis.cwa.gov.tw/StationData")
         page.wait_for_load_state("load")
+        page.get_by_label("自動雨量站").check()
         page.get_by_label("自動氣象站").check()
+        page.get_by_label("農業站").check()
         #page.locator("#station_area").select_option("高雄市")
         #time.sleep(1)
         page.locator("li").filter(has_text="站名站號").get_by_role("combobox").click()
@@ -81,7 +83,7 @@ class Crawler:
             time.sleep(1)
             page.get_by_text(str(previous_date.year), exact=True).click()  # 選擇當前年份
             time.sleep(1)
-            page.get_by_text(str(self.end_date.year)).click()  # 選擇目標年份
+            page.query_selector(f".vdatetime-year-picker__item:has-text('{str(self.end_date.year)}')").click()  # 選擇目標年份
             page.get_by_text("Continue").click()
             print('year select ok')
             time.sleep(1)
@@ -95,7 +97,7 @@ class Crawler:
             time.sleep(1)
             print('end_date select ')
             print(f"{self.end_date.month}月")
-            page.get_by_text(f"{self.end_date.month}月").click()
+            page.query_selector(f".vdatetime-month-picker__item:has-text('{self.end_date.month}月')").click() 
             print('month select ok')
             time.sleep(1)
             page.get_by_text("Continue").click()
@@ -105,12 +107,12 @@ class Crawler:
             print("end_date.day select:")
             print(self.end_date.day)
             page.locator("div:nth-child(5) > .lightbox-tool-type-ctrl > .lightbox-tool-type-ctrl-form > label").click()
-            page.get_by_text(f"{self.end_date.day}", exact=True).first.click()
+            page.query_selector(f".vdatetime-calendar__month__day:has-text('{str(self.end_date.day)}')").click()
             print('date select ok')
     
         # 處理下載
         
-        for i in   TqdmWrapper(self.number_list, desc=f"{' '*50}下載進度",ncols=200, unit='file', unit_scale=True):
+        for i in TqdmWrapper(self.number_list, desc=f"{' '*10}下載進度",ncols=200, unit='file', unit_scale=True):
             # 根據結束時間往前推算當前日期
             current_date = self.end_date - timedelta(days=i)
 

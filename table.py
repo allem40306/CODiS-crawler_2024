@@ -6,13 +6,14 @@ from prettytable import PrettyTable
 
 
 class Table:
-    def __init__(self, station_name, base_download_path):     
+    def __init__(self, station_name, base_download_path, month):     
         # 定義站名
         self.station_name = station_name
         self.station_code = self.station_name.split()[-1].strip("()")  # 提取站號
         
         # 建立下載路徑
         self.station_download_path = os.path.join(base_download_path, self.station_code)
+        self.month = month
 
     def print_df_as_table(self, df, max_rows=5):
         """
@@ -32,7 +33,7 @@ class Table:
     def run(self):
         #匯入 station_download_path 資料夾下所有csv檔案，並將檔名作為一個新的欄位
         extension = 'csv'
-        all_filenames = [i for i in glob.glob(f"{self.station_download_path}/*.{extension}")]
+        all_filenames = [i for i in glob.glob(f"{self.station_download_path}/*{self.month}*.{extension}")]
 
         # 讀取所有檔案，跳過第二行，並新增檔名作為新列
         combined_csv = pd.concat([pd.read_csv(f, skiprows=[1]).assign(檔名=os.path.basename(f)) for f in all_filenames])

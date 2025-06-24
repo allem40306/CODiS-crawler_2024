@@ -50,7 +50,7 @@ class Crawler:
         self.number_list = list(range(self.days_diff + 1))
 
     def run(self, playwright):
-        browser = playwright.chromium.launch(headless=False)  # 啟動瀏覽器
+        browser = playwright.chromium.launch(headless=True)  # 不跳出瀏覽器
         print('browser open')
         context = browser.new_context(accept_downloads=True)
         page = context.new_page()
@@ -59,12 +59,11 @@ class Crawler:
         page.get_by_label("自動雨量站").check()
         page.get_by_label("自動氣象站").check()
         page.get_by_label("農業站").check()
-        #page.locator("#station_area").select_option("高雄市")
-        #time.sleep(1)
+        page.get_by_role("button", name="顯示", exact=True).click()
         page.locator("li").filter(has_text="站名站號").get_by_role("combobox").click()
-        page.locator("li").filter(has_text="站名站號").get_by_role("combobox").fill(self.station_name)
+        page.locator("li").filter(has_text="站名站號").get_by_role("combobox").fill(self.station_code)
         page.locator(".leaflet-marker-icon > .icon_container > .marker_bgcolor > .bg_triangle").first.click()
-        page.get_by_role("button", name="觀看時序圖報表").click()
+        page.get_by_role("button", name="資料圖表展示").click()
         
         # 獲取當前日期
         current_date = datetime.now()
